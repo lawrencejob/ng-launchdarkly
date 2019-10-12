@@ -2,6 +2,49 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.1.1.
 
+Import the module into your AppModule definition:
+
+```ts
+{
+    ...
+
+    imports: [
+        LaunchDarkly.forRoot({
+            clientId: 'your client ID', // consider using environment.ts
+            options: { streaming: true }, // required for live updates
+        }),
+    ]
+}
+```
+
+Then hook up a feature with:
+
+```ts
+
+interface MyFeatures {
+    myBoolFlag: boolean;
+    myStringFlag: 'onstate' | 'offstate';
+    homePageEnabled: string;
+}
+
+class MyComponent {
+
+    showHomePage$ = this.launchDarklyService.variationStream('homePageEnabled');
+
+    constructor(
+        private launchDarklyService: LaunchDarklyService<MyFeatures>
+    )
+}
+```
+
+Then use it in your template with:
+
+```html
+<div *ngIf="showHomePage$ | async">
+    Only visible when homepage is enabled! Isn't this cool?!
+</div>
+```
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
